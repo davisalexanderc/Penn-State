@@ -118,9 +118,30 @@ class Board:
             piece.position = end_pos # Update the piece position
 
         move = chess.Move.from_uci(f"{self.to_chess_pos(start_pos)}{self.to_chess_pos(end_pos)}") # Converts the start and end positions to UCI chess notation
+        print(f"Attempting move: {move.uci()}") ############### Error checking
+        print("Legal moves:", [m.uci() for m in self.chess_board.legal_moves])
+
         if move in self.chess_board.legal_moves:
             self.chess_board.push(move) # Moves the piece on the chess board
             print(f"Moved piece from {start_pos} to {end_pos}") ############### Error checking
+
+            # Handle en passant capture
+            if piece.piece_type.lower() == 'p' and abs(start_col - end_col) == 1 and start_row != end_row:
+                print("En passant capture detected")
+                ep_row = start_row  # The row of the captured pawn
+                ep_col = end_col    # The column of the captured pawn
+                captured_piece = self.board[ep_row, ep_col]
+                if captured_piece:
+                    captured_piece.capture()
+                self.board[ep_row, ep_col] = None
+
+            # Handle check and checkmate
+            if self.chess_board.is_checkmate():
+                print("Checkmate!")
+                self.display_message("Checkmate!")
+            elif self.chess_board.is_check():
+                print("Check!")
+
         else:
             print(f"Invalid move: {self.to_chess_pos(start_pos)} to {self.to_chess_pos(end_pos)}") ############### Error checking
 
@@ -171,3 +192,20 @@ class Board:
         player_color = 'White' if self.chess_board.turn == chess.WHITE else 'Black'
         player_turn_text = font.render(f"Player Turn: {player_color}", True, (0, 0, 0))
         screen.blit(player_turn_text, (25, 850))
+
+    def display_message(self, message):
+        """
+        Displays a message on the screen.
+
+        Parameters:
+        - screen (pygame.Surface): The surface to display the message on.
+        - message (str): The message to display.
+
+        This method:
+        - Displays a message on the screen.
+        """
+
+        font = pygame.font.Font(None, 74)
+        message_text = font.render(message, True, (0, 0, 0))
+        self.screen.blit(message_text, (25, 925))
+        pygame.display.flip()

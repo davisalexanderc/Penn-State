@@ -22,6 +22,7 @@ class Piece:
         self.name = color + piece_type
         self.position = position
         self.image = self.load_image()
+        self.captured = False
 
     def load_image(self):
         """
@@ -52,4 +53,14 @@ class Piece:
         x = col * 100 + 25
         y = row * 100 + 25
         screen.blit(self.image, (x, y))  # Blit the piece image on the screen at the specified position
+
+    def capture(self):
+        """
+        Captures the piece.
+
+        This method:
+        - Sets the captured flag to True.
+        """
+
+        self.captured = True
 
