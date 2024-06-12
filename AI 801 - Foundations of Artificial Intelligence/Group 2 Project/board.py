@@ -34,7 +34,6 @@ class Board:
                                                                                             #uppercase for white pieces and lowercase for black pieces
                     self.board[row,col] = Piece(color, piece_type, (row, col))
 
-    def draw(self, screen):
     def draw(self, screen, status=""):
         """
         Draws the chess board and pieces on the screen.
@@ -76,7 +75,6 @@ class Board:
         score_text = font.render("Score: 0", True, BLACK)
 
         # Draw the player turn
-        self.draw_player_turn(screen)
         self.draw_player_turn(screen, status)
 
     def draw_piece(self, screen, symbol, row, col):  ############### This method is not used in the current implementation
@@ -137,13 +135,37 @@ class Board:
                     captured_piece.capture()
                 self.board[ep_row, ep_col] = None
 
+            # Handle castling
+            if piece.piece_type.lower() == 'k' and abs(start_col - end_col) == 2:
+                print("Castling detected")
+                if end_col == 6: # Kingside castling
+                    rook_start_pos = (start_row, 7)
+                    rook_end_pos = (start_row, 5)
+                elif end_col == 2: # Queenside castling
+                    rook_start_pos = (start_row, 0)
+                    rook_end_pos = (start_row, 3)
+
+                rook = self.board[rook_start_pos]
+                self.board[rook_end_pos] = rook
+                self.board[rook_start_pos] = None
+                if rook:
+                    rook.position = rook_end_pos
+                print(f"Moved rook from {rook_start_pos} to {rook_end_pos}")
+
+            # Handle pawn promotion
+            if piece.piece_type.lower() == 'p' and (end_row == 0 or end_row == 7):
+                print("Pawn promotion detected")
+                return "Promotion", piece.color, (end_row, end_col)
+
             # Handle check and checkmate
             if self.chess_board.is_checkmate():
                 print("Checkmate!")
-                self.display_message("Checkmate!")
                 return "Checkmate!"
             elif self.chess_board.is_check():
                 print("Check!")
+                return "Check!"
+            else:
+                return ""
 
         else:
             print(f"Invalid move: {self.to_chess_pos(start_pos)} to {self.to_chess_pos(end_pos)}") ############### Error checking
@@ -181,7 +203,6 @@ class Board:
         row, col = pos
         return f"{chr(col + 97)}{8-row}" # Converts the row and column indices to chess notation
 
-    def draw_player_turn(self, screen):
     def draw_player_turn(self, screen, status):
         """
         Draws the current player's turn on the screen.
@@ -196,6 +217,10 @@ class Board:
         player_color = 'White' if self.chess_board.turn == chess.WHITE else 'Black'
         player_turn_text = font.render(f"Player Turn: {player_color}", True, (0, 0, 0))
         screen.blit(player_turn_text, (25, 850))
+
+        if status:
+            status_text = font.render(status, True, (255, 0, 0))
+            screen.blit(status_text, (25, 925))
 
     def display_message(self, message):
         """
@@ -212,4 +237,19 @@ class Board:
         font = pygame.font.Font(None, 74)
         message_text = font.render(message, True, (0, 0, 0))
         self.screen.blit(message_text, (25, 925))
-        pygame.display.flip()        pygame.display.flip()
+        pygame.display.flip()
+
+    def promote_pawn(self):
+        """
+        Promotes a pawn to a queen.
+
+        This method:
+        - Promotes a pawn to a queen.
+        - Returns the promoted piece type.
+        """
+        print("Promoting pawn to q, r, b, n): ", end="")
+        promotion_piece = input().lower()
+        while promotion_piece not in ['q', 'r', 'b', 'n']:
+            print("Invalid input. Please enter q, r, b, or n: ", end="")
+            promotion_piece = input().lower()
+        return promotion_piece

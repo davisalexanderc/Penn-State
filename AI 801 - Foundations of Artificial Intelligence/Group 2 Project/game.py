@@ -31,7 +31,6 @@ class Game:
         """
 
         self.screen.fill((255,255,255)) # Fill the screen with white
-        self.board.draw(self.screen) # Draw the board and pieces
         self.board.draw(self.screen, self.status) # Draw the board and pieces
 
         # Highlight possible moves
@@ -105,7 +104,6 @@ class Game:
         row, col = pos
         if self.selected_piece: # If a piece is already selected
             if pos in self.possible_moves: # If the clicked position is a possible move
-                self.board.move_piece(self.selected_pos, pos) # Move the selected piece to the clicked position
                 message = self.board.move_piece(self.selected_pos, pos) # Move the selected piece to the clicked position
                 self.selected_piece = None # Deselect the piece
                 self.selected_pos = None # Deselect the position
@@ -135,7 +133,7 @@ class Game:
                 self.selected_piece = chess_piece # Select the piece
                 self.selected_pos = pos # Select the position
                 self.possible_moves = self.board.get_possible_moves(chess_piece) # Get the possible moves for the selected piece
-                print(f"Selected piece at: {self.selected_pos}, possible moves: {self.possible_moves}") ############### Error checking                print(f"Selected piece at: {self.selected_pos}, possible moves: {self.possible_moves}") ############### Error checking
+                print(f"Selected piece at: {self.selected_pos}, possible moves: {self.possible_moves}") ############### Error checking
                 self.status = ""
 
     def display_message(self, message):
