@@ -35,6 +35,7 @@ class Board:
                     self.board[row,col] = Piece(color, piece_type, (row, col))
 
     def draw(self, screen):
+    def draw(self, screen, status=""):
         """
         Draws the chess board and pieces on the screen.
 
@@ -76,6 +77,7 @@ class Board:
 
         # Draw the player turn
         self.draw_player_turn(screen)
+        self.draw_player_turn(screen, status)
 
     def draw_piece(self, screen, symbol, row, col):  ############### This method is not used in the current implementation
         """
@@ -139,6 +141,7 @@ class Board:
             if self.chess_board.is_checkmate():
                 print("Checkmate!")
                 self.display_message("Checkmate!")
+                return "Checkmate!"
             elif self.chess_board.is_check():
                 print("Check!")
 
@@ -179,6 +182,7 @@ class Board:
         return f"{chr(col + 97)}{8-row}" # Converts the row and column indices to chess notation
 
     def draw_player_turn(self, screen):
+    def draw_player_turn(self, screen, status):
         """
         Draws the current player's turn on the screen.
 
@@ -208,4 +212,4 @@ class Board:
         font = pygame.font.Font(None, 74)
         message_text = font.render(message, True, (0, 0, 0))
         self.screen.blit(message_text, (25, 925))
-        pygame.display.flip()
+        pygame.display.flip()        pygame.display.flip()
