@@ -2,7 +2,7 @@ import pygame
 import chess
 import chess.engine
 
-class Board:
+class Chess_Board:
     def __init__(self):
         """
         Initializes the chess board and the Stockfish engine.        
@@ -10,7 +10,7 @@ class Board:
         self.board = chess.Board()
         self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
 
-def draw_board(self, screen, status):
+    def draw_board(self, board, status):
         """
         Draws the chess board and pieces on the screen.
 

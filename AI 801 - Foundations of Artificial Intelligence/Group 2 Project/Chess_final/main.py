@@ -1,5 +1,6 @@
 import chess
 import chess.engine
+import chess_gui
 
 def print_board(board):
     """
@@ -30,13 +31,16 @@ def main():
     """
 
     board = chess.Board() # Initialize the chess board
+
     while not board.is_game_over(): # Main game loop
-        print_board(board)   ####### Add call to board drawing program/function here ##########
+        #print_board(board)   ####### Add call to board drawing program/function here ##########
+        chess_gui.update_display(board)
+
         if board.turn == chess.WHITE:
             print("White's turn")
         else:
             print("Black's turn")
-
+        print(board.fen()) # Print the board state in Forsyth-Edwards Notation (FEN)
         move = input("Enter your move in UCI format (e.g., e2e4): ") ####### Add call to movement function here
         try: # Validate the move
             move = chess.Move.from_uci(move) # Convert the move to UCI format (e.g., e2e4)
@@ -50,6 +54,9 @@ def main():
                 print("Illegal move, please try again.")
         except ValueError: # If the move is not in UCI format
             print("Invalid move format, please try again.")
+
+    # Update the board one last time and check for game over conditions
+    chess_gui.update_display(board) 
 
     # Game over conditions
     print_board(board)
@@ -94,4 +101,5 @@ def get_pawn_promotion():
             print("Invalid promotion piece, please try again.")
 
 if __name__ == "__main__":
+    chess_gui.main_loop(chess.Board())
     main()
