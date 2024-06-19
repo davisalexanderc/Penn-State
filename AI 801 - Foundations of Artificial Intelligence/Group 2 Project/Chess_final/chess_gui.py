@@ -1,3 +1,4 @@
+from typing import Any
 import pygame
 import chess
 
@@ -27,32 +28,39 @@ def load_piece_images():
     
     return pieces
 
-# Draw Screen
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Chess')
-piece_images = load_piece_images()
-pygame.draw.rect(screen, TAN, (0, 0, 850, 1000), 25)
-pygame.draw.rect(screen, TAN, (0, 825, 850, 825), 25) 
+class ChessGUI:
+    def __init__(self, board):
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Chess')
+        self.piece_images = load_piece_images()
+        pygame.draw.rect(self.screen, TAN, (0, 0, 850, 1000), 25)
+        pygame.draw.rect(self.screen, TAN, (0, 825, 850, 825), 25) 
+        self.board = board
 
-def draw_board(screen, board, piece_images):
-    for row in range(8):
-        for col in range(8):
-            color = DARKGRAY if (row + col) % 2 == 0 else WHITE
-            pygame.draw.rect(screen, color, (col * SQUARE_SIZE + BOARDER, row * SQUARE_SIZE + BOARDER, SQUARE_SIZE, SQUARE_SIZE))
-            piece = board.piece_at(chess.square(col, 7 - row))
-            if piece:
-                piece_image = piece_images[piece.symbol()] 
-                screen.blit(piece_image, (col * SQUARE_SIZE + BOARDER, row * SQUARE_SIZE + BOARDER))
-    pygame.display.flip()
+    def draw_board(self):
+        # Draw Screen
+        screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Chess')
+        piece_images = load_piece_images()
 
-def update_display(board):
-    draw_board(screen, board, piece_images)
+        for row in range(8):
+            for col in range(8):
+                color = DARKGRAY if (row + col) % 2 == 0 else WHITE
+                pygame.draw.rect(screen, color, (col * SQUARE_SIZE + BOARDER, row * SQUARE_SIZE + BOARDER, SQUARE_SIZE, SQUARE_SIZE))
+                piece = self.board.piece_at(chess.square(col, 7 - row))
+                if piece:
+                    piece_image = piece_images[piece.symbol()] 
+                    screen.blit(piece_image, (col * SQUARE_SIZE + BOARDER, row * SQUARE_SIZE + BOARDER))
+        pygame.display.flip()
 
-def main_loop(board):
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        update_display(board)
-    pygame.quit()
+    def update_display(self):
+        self.draw_board()
+
+    def main_loop(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            self.update_display()
+        pygame.quit()

@@ -1,54 +1,60 @@
-import pygame
 import chess
 import chess.engine
 
-class Chess_Board:
+class ChessBoard:
     def __init__(self):
-        """
-        Initializes the chess board and the Stockfish engine.        
-        """
         self.board = chess.Board()
-        self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
+        #self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
 
-    def draw_board(self, board, status):
+    def reset_board(self):
+        self.board.reset()
+
+    def make_move(self, move):
+        if move in self.board.legal_moves:
+            self.board.push(move)
+            return True
+        return False
+    
+    def get_legal_moves(self):
+        return list(self.board.legal_moves)
+    
+    def is_game_over(self):
+        return self.board.is_game_over()
+    
+    def get_game_results(self):
         """
-        Draws the chess board and pieces on the screen.
+        Get the game results for the end of the game. Prints the result to the console, then 
+        returns the scores for white and black players (0 for loss, 0.5 for draw, 1 for win).
 
         Parameters:
-        - screen (pygame.Surface): The surface to draw the board on.
+        None
 
-        This method:
-        - Draws the chess board with a 25 pixel border and dark gray and white tiles that are 100 x 100 pixels.
-        - Draws the pieces on the board.
+        Returns:
+        tuple: A tuple containing the scores for white and black players (0 for loss, 0.5 for draw, 1 for win)
+        
         """
-
-        # Define colors
-        BLACK = (0, 0, 0)
-        WHITE = (255, 255, 255)
-        TAN = (210, 180, 140) # For the board color
-        DARKGRAY = (100, 100, 100)
-
-        # Draw the board
-        pygame.draw.rect(screen, TAN, (0, 0, 850, 1000), 25)
-        pygame.draw.rect(screen, TAN, (0, 825, 850, 825), 25)       
-        for row in range(8):
-            for col in range(8):
-                if (row + col) % 2 == 0:
-                    pygame.draw.rect(screen, WHITE, (25 + col * 100, 25 + row * 100, 100, 100))
-                else:
-                    pygame.draw.rect(screen, DARKGRAY, (25 + col * 100, 25 + row * 100, 100, 100))
-                
-                # Draw the pieces
-                ###piece = self.chess_board.piece_at(chess.square(col, 7-row))
-                piece = self.board[row, col]
-                if piece:
-                    ###self.draw_piece(screen, piece.symbol(), row, col)
-                    piece.draw(screen)
-
-        # Draw HUD
-        font = pygame.font.Font(None, 74)
-        # Draw Score
-        score_text = font.render("Score: 0", True, BLACK)
-
-        # Draw the player turn
-        self.draw_player_turn(screen, status)
+        if self.board.is_checkmate(): # Check for checkmate
+            if self.board.turn == chess.WHITE:
+                print("Checkmate! Black wins!")
+                return (0,1)
+            else:
+                print("Checkmate! White wins!")
+                return (1,0)
+        elif self.board.is_stalemate(): # Check for stalemate (draw) which is when the player whose turn it is has no legal moves and their king is not in check
+            print("Stalemate!")
+            return (0.5,0.5)
+        elif self.board.is_insufficient_material(): # Check for insufficient material (draw) which is when neither player has enough material to checkmate the other
+            print("Draw due to insufficient material!")
+            return (0.5,0.5)
+        elif self.board.is_seventyfive_moves(): # Check for the seventy-five-move rule (draw) which is when no pawn has been moved and no piece has been captured in the last 75 moves
+            print("Draw due to the seventy-five-move rule!")
+            return (0.5,0.5)
+        elif self.board.is_fivefold_repetition(): # Check for fivefold repetition (draw) which is when the same position has occurred five times with the same player to move
+            print("Draw due to fivefold repetition!")
+            return (0.5,0.5)
+        else: # If none of the above conditions are met
+            print("Game over!")
+            return (0,0)
+        
+    def close_engine(self):
+        self.engine.quit()
