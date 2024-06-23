@@ -30,31 +30,34 @@ class ChessBoard:
         None
 
         Returns:
-        tuple: A tuple containing the scores for white and black players (0 for loss, 0.5 for draw, 1 for win)
+        tuple: A tuple containing the scores for white and black players (0 for loss, 0.5 for draw, 1 for win) and a message string.
         
         """
         if self.board.is_checkmate(): # Check for checkmate
             if self.board.turn == chess.WHITE:
-                print("Checkmate! Black wins!")
-                return (0,1)
+                message = "Checkmate! Black wins!"
+                return (0,1, message)
             else:
-                print("Checkmate! White wins!")
-                return (1,0)
+                message = "Checkmate! White wins!"
+                return (1,0, message)
         elif self.board.is_stalemate(): # Check for stalemate (draw) which is when the player whose turn it is has no legal moves and their king is not in check
-            print("Stalemate!")
-            return (0.5,0.5)
+            message = "Stalemate!"
+            return (0.5,0.5, message)
         elif self.board.is_insufficient_material(): # Check for insufficient material (draw) which is when neither player has enough material to checkmate the other
-            print("Draw due to insufficient material!")
-            return (0.5,0.5)
+            message = "Draw due to insufficient material!"
+            return (0.5,0.5, message)
         elif self.board.is_seventyfive_moves(): # Check for the seventy-five-move rule (draw) which is when no pawn has been moved and no piece has been captured in the last 75 moves
-            print("Draw due to the seventy-five-move rule!")
-            return (0.5,0.5)
+            message = "Draw due to the seventy-five-move rule!"
+            return (0.5,0.5, message)
         elif self.board.is_fivefold_repetition(): # Check for fivefold repetition (draw) which is when the same position has occurred five times with the same player to move
-            print("Draw due to fivefold repetition!")
-            return (0.5,0.5)
-        else: # If none of the above conditions are met
-            print("Game over!")
-            return (0,0)
+            message = "Draw due to fivefold repetition!"
+            return (0.5,0.5, message)
+        elif self.board.is_check(): # Check for fivefold repetition (draw) which is when the same position has occurred five times with the same player to move
+            message = "Check"
+            return (0.0,0.0, message)
+        else: # Normal state where the game is still ongoing
+            message = " "
+            return (0.0,0.0, message)
         
     def close_engine(self):
         self.engine.quit()
