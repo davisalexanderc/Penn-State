@@ -1,8 +1,7 @@
 import chess
-# import chess.engine
 from board import ChessBoard
 from chess_gui import ChessGUI
-#import pygame
+from AI_Player import get_ai_engine
 
 class GameModes:
     """
@@ -27,7 +26,7 @@ class GameModes:
         self.white_player = None
         self.black_player = None
 
-    def move_ai(self):
+    def move_ai(self, ai_name):
         """
         Moves the AI player using the Stockfish engine. Eventrually, this will be replaced with the AI model.
 
@@ -38,12 +37,11 @@ class GameModes:
         None
 
         """
-
-        board = self.board.board
-        print("AI's turn")
-        result = self.board.engine.play(board, chess.engine.Limit(time=0.5))  ####### Add call to AI model here
-        board.push(result.move)
-
+        ai_engine = get_ai_engine(ai_name, self.board.board)
+        move = ai_engine.select_move()
+        if move is not None:
+            self.board.board.push(move)
+            print(f'AI move: {move}')
 
     def play_game(self, white_player, black_player):
         """
@@ -68,13 +66,13 @@ class GameModes:
                     while not self.gui.move_human():
                         pass
                 else:
-                    self.move_ai()
+                    self.move_ai(self.white_player)
             else:
                 if self.black_player == 'human':
                     while not self.gui.move_human():
                         pass
                 else:
-                    self.move_ai()
+                    self.move_ai(self.black_player)
 
             self.gui.update_display()
 

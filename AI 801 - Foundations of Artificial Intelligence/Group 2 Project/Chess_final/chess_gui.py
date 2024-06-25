@@ -76,7 +76,7 @@ def draw_button(screen, text, location, font = start_font, button_color = DARKGR
 
 def game_start_menu():
     """
-    The main function that runs the game.
+    Generates the game start menu.
 
     Parameters:
     None
@@ -116,13 +116,76 @@ def game_start_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 if button1_location.collidepoint(mouse_pos):
-                    return ("human", "human")
+                    white_player = "human"
+                    black_player = "human"
+                    return (white_player, black_player)
                 elif button2_location.collidepoint(mouse_pos):
-                    return ("human", "ai")
+                    white_player = "human"
+                    _, black_player = select_ai_menu("black")
+                    return (white_player, black_player)
                 elif button3_location.collidepoint(mouse_pos):
-                    return ("ai", "human")
+                    _, white_player = select_ai_menu("white")
+                    black_player = "human"                    
+                    return (white_player, black_player)
                 elif button4_location.collidepoint(mouse_pos):
-                    return ("ai", "ai")
+                    _, white_player = select_ai_menu("white")
+                    _, black_player = select_ai_menu("black")
+                    return (white_player, black_player)
+        
+        pygame.display.flip()  # Update the display
+        clock.tick(15) # set frame rate to 30 fps
+    pygame.quit()
+
+def select_ai_menu(player_color):
+    """
+    Generates the AI selection menu.
+
+    Parameters:
+    - player_color (str): The color of the player ('white' or 'black').
+
+    Returns:
+    str: The selected AI engine.
+    
+    """
+
+    running = True
+    clock = pygame.time.Clock()
+    ai_screen = pygame.display.set_mode((START_SCREEN_WIDTH, START_SCREEN_HEIGHT), pygame.DOUBLEBUF)
+    pygame.display.set_caption(f'Select AI Engine for {player_color} Player')
+
+    while running:
+
+        ai_screen.fill(WHITE)
+
+        # Define button locations
+        button_width, button_height = 300, 50
+        button1_location = pygame.Rect(100, 100, button_width, button_height)
+        button2_location = pygame.Rect(100, 200, button_width, button_height)
+        button3_location = pygame.Rect(100, 300, button_width, button_height)
+        button4_location = pygame.Rect(100, 400, button_width, button_height)
+
+        # Draw buttons
+        draw_text("Welcome to Chess!", start_font, BLACK, ai_screen, START_SCREEN_WIDTH // 2, 50)
+        draw_button(ai_screen, "Random Engine", button1_location)
+        draw_button(ai_screen, "Minimax Engine", button2_location)
+        draw_button(ai_screen, "AlphaZero Engine", button3_location)
+        draw_button(ai_screen, "Stockfish Engine", button4_location)
+
+        # Check for button press
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                return ("None")
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                if button1_location.collidepoint(mouse_pos):
+                    return f"{player_color}_ai", "Random AI"
+                elif button2_location.collidepoint(mouse_pos):
+                    return f"{player_color}_ai", "Random AI"
+                elif button3_location.collidepoint(mouse_pos):
+                    return f"{player_color}_ai", "AlphaZero AI"
+                elif button4_location.collidepoint(mouse_pos):
+                    return f"{player_color}_ai", "Stockfish AI"
         
         pygame.display.flip()  # Update the display
         clock.tick(15) # set frame rate to 30 fps
