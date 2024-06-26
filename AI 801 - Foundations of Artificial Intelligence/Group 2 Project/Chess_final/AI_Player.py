@@ -8,7 +8,7 @@ class BaseAI:
     """
 
     def __init__(self, board):
-        self.board = chess.Board()
+        self.board = board # chess.Board()
         self.name = None
 
     def select_move(self):
