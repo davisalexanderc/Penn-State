@@ -1,4 +1,5 @@
 import chess
+import chess.engine
 import random
 import datetime
 from minimax import Minimax
@@ -71,7 +72,7 @@ class MinimaxAI(BaseAI):
     
     """
     
-    def __init__(self, board, depth = 7): # default depth was 3
+    def __init__(self, board, depth = 11): # default depth was 3
         super().__init__(board)
         self.name = "Minimax AI"
         self.depth = depth
@@ -92,12 +93,15 @@ class MinimaxAI(BaseAI):
 class StockfishAI(BaseAI):
     """
     A class for an AI player that selects a move using the Stockfish engine.
+    The version of Stockfish used is Stockfish 24.0
     
     """
     
-    def __init__(self, board):
+    def __init__(self, board, stockfish_path, depth = 11):
         super().__init__(board)
         self.name = "Stockfish AI"
+        self.depth = depth
+        self.engine = chess.engine.SimpleEngine.popen_uci(stockfish_path)
         
     def select_move(self):
         """
@@ -110,7 +114,21 @@ class StockfishAI(BaseAI):
         move (str): The move selected by the AI player.
         
         """
-        raise NotImplementedError("The select_move method must be implemented by the subclass.")
+        result = self.engine.play(self.board, chess.engine.Limit(time=0.5, depth=self.depth)) # default time 500 miliseconds
+        return result.move
+    
+    def close(self):
+        """
+        Closes the Stockfish engine.
+        
+        Parameters:
+        None
+        
+        Returns:
+        None
+        
+        """
+        self.engine.quit()
     
 class AlphaZeroAI(BaseAI):
     """
@@ -151,5 +169,8 @@ def get_ai_engine(name, board):
         return RandomAI(board)
     elif name == "Minimax AI":
         return MinimaxAI(board)
+    elif name == "Stockfish AI":
+        stockfish_path = "stockfish/stockfish-windows-x86-64-avx2.exe"
+        return StockfishAI(board, stockfish_path)
     else:
         raise ValueError("Invalid AI engine name.")
