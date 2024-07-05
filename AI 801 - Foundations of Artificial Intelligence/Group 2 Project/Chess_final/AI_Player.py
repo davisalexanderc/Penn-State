@@ -71,7 +71,7 @@ class MinimaxAI(BaseAI):
     
     """
     
-    def __init__(self, board, depth = 3):
+    def __init__(self, board, depth = 7): # default depth was 3
         super().__init__(board)
         self.name = "Minimax AI"
         self.depth = depth
