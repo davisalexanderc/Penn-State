@@ -1,5 +1,7 @@
 import chess
 import random
+import datetime
+from minimax import Minimax
 
 class BaseAI:
     """
@@ -85,44 +87,7 @@ class MinimaxAI(BaseAI):
         move (str): The move selected by the AI player.
         
         """
-        def minimax(board, depth, is_maximizing):
-            if depth == 0 or board.is_game_over():
-                return board_evaluation(board)
-            if is_maximizing:
-                max_eval = float("-inf")
-                for move in board.legal_moves:
-                    board.push(move)
-                    eval = minimax(board, depth - 1, False)
-                    board.pop()
-                    max_eval = max(max_eval, eval)
-                return max_eval
-            else:
-                min_eval = float("inf")
-                for move in board.legal_moves:
-                    board.push(move)
-                    eval = minimax(board, depth - 1, True)
-                    board.pop()
-                    min_eval = min(min_eval, eval)
-                return min_eval
-        
-        def board_evaluation(board):
-            if board.is_checkmate():
-                if board.turn == chess.WHITE:
-                    return float("-inf")
-                else:
-                    return float("inf")
-            return 0
-        
-        best_move = None
-        best_eval = float("-inf")
-        for move in self.board.legal_moves:
-            self.board.push(move)
-            eval = minimax(self.board, self.depth, False)
-            self.board.pop()
-            if eval > best_eval:
-                best_eval = eval
-                best_move = move
-        return best_move
+        return Minimax.minimaxRoot(self.board, self.depth, True, datetime.datetime.now(), 3)
     
 class StockfishAI(BaseAI):
     """
