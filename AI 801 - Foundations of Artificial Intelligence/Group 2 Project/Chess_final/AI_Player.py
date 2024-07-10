@@ -12,6 +12,7 @@ class BaseAI:
 
     def __init__(self, board):
         self.board = board # chess.Board()
+        self.depth = None
         self.name = None
 
     def select_move(self):
@@ -72,7 +73,7 @@ class MinimaxAI(BaseAI):
     
     """
     
-    def __init__(self, board, depth = 11): # default depth was 3
+    def __init__(self, board, depth = 3): # default depth was 3
         super().__init__(board)
         self.name = "Minimax AI"
         self.depth = depth

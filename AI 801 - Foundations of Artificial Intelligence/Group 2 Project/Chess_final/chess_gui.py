@@ -181,7 +181,7 @@ def select_ai_menu(player_color):
                 if button1_location.collidepoint(mouse_pos):
                     return f"{player_color}_ai", "Random AI"
                 elif button2_location.collidepoint(mouse_pos):
-                    return f"{player_color}_ai", "Random AI"
+                    return f"{player_color}_ai", "Minimax AI"
                 elif button3_location.collidepoint(mouse_pos):
                     return f"{player_color}_ai", "AlphaZero AI"
                 elif button4_location.collidepoint(mouse_pos):
