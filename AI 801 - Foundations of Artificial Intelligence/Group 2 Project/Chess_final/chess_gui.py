@@ -1,8 +1,14 @@
 from typing import Any
+import os
 import pygame
 import chess
 import game_modes
 from board import ChessBoard
+
+# Set the desired window position
+x = 300  # X position of the window
+y = 50  # Y position of the window
+os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 
 pygame.init()
 
@@ -112,25 +118,25 @@ def game_start_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                return ("None", "None")
+                return ("None", None, "None", None)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 if button1_location.collidepoint(mouse_pos):
                     white_player = "human"
                     black_player = "human"
-                    return (white_player, black_player)
+                    return (white_player, None, black_player, None)
                 elif button2_location.collidepoint(mouse_pos):
                     white_player = "human"
-                    _, black_player = select_ai_menu("black")
-                    return (white_player, black_player)
+                    _, black_player, black_depth = select_ai_menu("black")
+                    return (white_player, None, black_player, black_depth)
                 elif button3_location.collidepoint(mouse_pos):
-                    _, white_player = select_ai_menu("white")
+                    _, white_player, white_depth = select_ai_menu("white")
                     black_player = "human"                    
-                    return (white_player, black_player)
+                    return (white_player, white_depth, black_player, None)
                 elif button4_location.collidepoint(mouse_pos):
-                    _, white_player = select_ai_menu("white")
-                    _, black_player = select_ai_menu("black")
-                    return (white_player, black_player)
+                    _, white_player, white_depth = select_ai_menu("white")
+                    _, black_player, black_depth = select_ai_menu("black")
+                    return (white_player, white_depth, black_player, black_depth)
         
         pygame.display.flip()  # Update the display
         clock.tick(15) # set frame rate to 30 fps
@@ -179,16 +185,64 @@ def select_ai_menu(player_color):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 if button1_location.collidepoint(mouse_pos):
-                    return f"{player_color}_ai", "Random AI"
+                    return f"{player_color}_ai", "Random AI", None
                 elif button2_location.collidepoint(mouse_pos):
-                    return f"{player_color}_ai", "Minimax AI"
+                    depth = select_depth_menu(player_color, "Minimax AI")
+                    return f"{player_color}_ai", "Minimax AI", depth
                 elif button3_location.collidepoint(mouse_pos):
-                    return f"{player_color}_ai", "AlphaZero AI"
+                    return f"{player_color}_ai", "AlphaZero AI", None
                 elif button4_location.collidepoint(mouse_pos):
-                    return f"{player_color}_ai", "Stockfish AI"
+                    depth = select_depth_menu(player_color, "Stockfish AI")
+                    return f"{player_color}_ai", "Stockfish AI", depth
         
         pygame.display.flip()  # Update the display
         clock.tick(15) # set frame rate to 30 fps
+    pygame.quit()
+
+def select_depth_menu(player_color, ai_engine):
+    """
+    
+
+    """
+    running = True
+    clock = pygame.time.Clock()
+    ai_depth_screen = pygame.display.set_mode((START_SCREEN_WIDTH, START_SCREEN_HEIGHT), pygame.DOUBLEBUF)
+    pygame.display.set_caption(f"Select Depth for {player_color}'s {ai_engine} AI Engine")
+
+    while running:
+
+        ai_depth_screen.fill(WHITE)
+
+        # Define button locations
+        button_width, button_height = 50, 50
+        button_gap = 10
+        buttons = []
+
+        for i in range(10):
+            x = 100 + (i % 5) * (button_width + button_gap)
+            y = 100 + (i // 5) * (button_height + button_gap)
+            buttons.append(pygame.Rect(x, y, button_width, button_height))
+
+        # Draw buttons
+        draw_text("Welcome to Chess!", start_font, BLACK, ai_depth_screen, START_SCREEN_WIDTH // 2, 50)
+
+        for i, button in enumerate(buttons):
+            draw_button(ai_depth_screen, str(i + 1), button, start_font)
+
+        # Check for button press
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                return None
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                for i, button in enumerate(buttons):
+                    if button.collidepoint(mouse_pos):
+                        print(f"Depth selected: {i + 1}")
+                        return i + 1
+                    
+        pygame.display.flip()  # Update the display
+        clock.tick(15) # set frame rate to 15 fps
     pygame.quit()
 
 # Define Functions for Loading and Drawing Piece Images

@@ -1,2 +1,106 @@
 White Player,Black Player,White Depth,Black Depth,Number of Moves,Winning Player
-human,Minimax AI,,3,59,white
+human,Minimax AI,,3.0,59,white
+Minimax AI,Random AI,3.0,,79,white
+Minimax AI,Random AI,3.0,,137,draw
+Minimax AI,Random AI,3.0,,41,white
+Minimax AI,Random AI,3.0,,11,white
+Minimax AI,Random AI,3.0,,35,white
+Minimax AI,Random AI,3.0,,79,draw
+Minimax AI,Random AI,3.0,,45,white
+Minimax AI,Random AI,3.0,,69,white
+Minimax AI,Random AI,3.0,,9,white
+Minimax AI,Random AI,3.0,,61,white
+Minimax AI,Random AI,3.0,,99,draw
+Minimax AI,Random AI,3.0,,49,draw
+Minimax AI,Random AI,3.0,,57,draw
+Minimax AI,Random AI,3.0,,41,white
+Minimax AI,Random AI,3.0,,312,draw
+Minimax AI,Random AI,3.0,,97,draw
+Minimax AI,Random AI,3.0,,67,white
+Minimax AI,Random AI,3.0,,39,white
+Minimax AI,Random AI,3.0,,43,white
+Minimax AI,Random AI,3.0,,207,draw
+Minimax AI,Random AI,3.0,,11,white
+Minimax AI,Random AI,3.0,,75,draw
+Minimax AI,Random AI,3.0,,67,white
+Minimax AI,Random AI,3.0,,167,white
+Minimax AI,Random AI,3.0,,39,white
+Minimax AI,Random AI,3.0,,63,white
+Minimax AI,Random AI,3.0,,133,draw
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Stockfish AI,Minimax AI,6.0,6.0,75,white
+Minimax AI,Stockfish AI,7.0,3.0,108,black
+Minimax AI,Stockfish AI,7.0,3.0,108,black
+Stockfish AI,Minimax AI,2.0,7.0,115,white
+Stockfish AI,Minimax AI,2.0,7.0,115,white
+Stockfish AI,Minimax AI,2.0,7.0,115,white
+Stockfish AI,Random AI,2.0,,105,white
+Stockfish AI,Random AI,2.0,,65,white
+Stockfish AI,Random AI,2.0,,67,draw
+Stockfish AI,Random AI,2.0,,51,white
+Stockfish AI,Random AI,2.0,,71,white
+Stockfish AI,Random AI,2.0,,61,white
+Stockfish AI,Random AI,2.0,,61,white
+Stockfish AI,Random AI,2.0,,87,white
+Stockfish AI,Random AI,2.0,,65,white
+Stockfish AI,Random AI,2.0,,65,white
+Stockfish AI,Random AI,2.0,,45,white
+Stockfish AI,Random AI,2.0,,37,white
+Stockfish AI,Random AI,2.0,,103,white
+Random AI,Stockfish AI,,11.0,38,black
+Random AI,Stockfish AI,,11.0,32,black
+Random AI,Stockfish AI,,11.0,32,black
+Random AI,Stockfish AI,,11.0,56,black
+Random AI,Stockfish AI,,11.0,30,black
+Random AI,Stockfish AI,,11.0,32,black
+Random AI,Stockfish AI,,11.0,32,black
+Random AI,Stockfish AI,,11.0,38,black
+Random AI,Stockfish AI,,11.0,28,black
+Random AI,Stockfish AI,,11.0,54,black
+Random AI,Stockfish AI,,11.0,80,black
+Random AI,Stockfish AI,,11.0,34,black
+Random AI,Stockfish AI,,11.0,28,black
+Random AI,Stockfish AI,,11.0,14,black
+Random AI,Stockfish AI,,11.0,22,black
+Random AI,Stockfish AI,,11.0,46,black
+Random AI,Stockfish AI,,11.0,14,black
+Random AI,Stockfish AI,,11.0,34,black
+Random AI,Stockfish AI,,11.0,32,black
+Random AI,Stockfish AI,,11.0,58,black
+Random AI,Stockfish AI,,11.0,46,black
+human,Minimax AI,,,13,white
+human,Minimax AI,,,9,white
+human,Minimax AI,,,13,white
+human,Minimax AI,,,11,white
+Minimax AI,human,,,16,black
+human,Minimax AI,,,95,white
+Minimax AI,human,,,34,black
+Minimax AI,Minimax AI,,,44,draw
+Minimax AI,Minimax AI,,,31,draw
+Minimax AI,Minimax AI,,,31,draw
+Minimax AI,Minimax AI,,,31,draw
+Minimax AI,Minimax AI,,,31,draw
+Minimax AI,Minimax AI,,,31,draw
+Minimax AI,Stockfish AI,,,112,black
+Minimax AI,Stockfish AI,,,62,black
+Minimax AI,Stockfish AI,,,86,black
+human,Minimax AI,,,53,white
+human,Minimax AI,,1.0,31,white
+Stockfish AI,Minimax AI,1.0,5.0,29,white
+Stockfish AI,Minimax AI,1.0,5.0,29,white
+Stockfish AI,Minimax AI,1.0,5.0,27,white
+Stockfish AI,Minimax AI,1.0,5.0,29,white
+Stockfish AI,Minimax AI,1.0,5.0,29,white
+Minimax AI,Stockfish AI,6.0,1.0,38,black
+Minimax AI,Stockfish AI,6.0,1.0,26,black
+Minimax AI,Stockfish AI,6.0,1.0,60,black
+Minimax AI,Stockfish AI,6.0,1.0,56,black
+Minimax AI,Stockfish AI,6.0,1.0,80,black
+human,Minimax AI,,6.0,79,white
+human,Minimax AI,,5.0,15,white

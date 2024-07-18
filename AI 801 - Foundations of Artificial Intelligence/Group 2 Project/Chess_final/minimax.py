@@ -1,5 +1,6 @@
 import datetime
 import chess
+import random
 from numpy import inf, flip
 
 class Minimax:
@@ -82,7 +83,7 @@ class Minimax:
     kingEvalBlack = reverseArray.__func__(kingEvalWhite)
 
     @staticmethod
-    def minimaxRoot(board: chess.Board, depth, maximizingPlayer, time_before: datetime.datetime, limit_time):
+    def minimaxRoot_old(board: chess.Board, depth, maximizingPlayer, time_before: datetime.datetime, limit_time):
         possibleMoves = board.legal_moves
         bestMove = float("-inf")
         bestMoveFound = None
@@ -104,7 +105,47 @@ class Minimax:
         return bestMoveFound
 
     @staticmethod
-    def minimax(board: chess.Board, depth, alpha, beta, maximizingPlayer, time_before: datetime.datetime, limit_time, turn):
+    def minimaxRoot(board: chess.Board, depth, maximizingPlayer, 
+                    time_before: datetime.datetime, limit_time, color):
+        possibleMoves = list(board.legal_moves)
+        random.shuffle(possibleMoves) #Shuffle the moves to randomize the order of the moves
+        bestMoveFound = None
+
+        if maximizingPlayer:
+            bestValue = float("-inf")
+            for move in possibleMoves:
+                time_after = datetime.datetime.now()
+                board.push(move)
+                board_value = Minimax.minimax(board, depth - 1, float("-inf"), float("inf"), False, 
+                                              time_before, limit_time, not color)
+                board.pop()
+                if board_value >= bestValue:
+                    bestValue = board_value
+                    bestMoveFound = move
+                    print("Best move for now: ", str(bestMoveFound))
+                answerTime = time_after - time_before
+                if answerTime.seconds >= limit_time:
+                    break
+        else:
+            bestValue = float("inf")
+            for move in possibleMoves:
+                time_after = datetime.datetime.now()
+                board.push(move)
+                board_value = Minimax.minimax(board, depth - 1, float("-inf"), float("inf"), True, 
+                                              time_before, limit_time, 'white', not color)
+                board.pop()
+                if board_value <= bestValue:
+                    bestValue = board_value
+                    bestMoveFound = move
+                    print("Best move for now: ", str(bestMoveFound))
+                answerTime = time_after - time_before
+                if answerTime.seconds >= limit_time:
+                    break
+
+        return bestMoveFound
+
+    @staticmethod
+    def minimax_old(board: chess.Board, depth, alpha, beta, maximizingPlayer, time_before: datetime.datetime, limit_time, turn):
         time_after = datetime.datetime.now()
         answerTime = time_after - time_before
         if depth == 0 or answerTime.seconds >= limit_time:
@@ -153,14 +194,72 @@ class Minimax:
                     return bestMove
 
             return bestMove
+        
+    @staticmethod
+    def minimax(board: chess.Board, depth, alpha, beta, maximizingPlayer, 
+                time_before: datetime.datetime, limit_time, color):
+        time_after = datetime.datetime.now()
+        answerTime = time_after - time_before
+        if depth == 0 or answerTime.seconds >= limit_time or board.is_game_over():
+            node_evaluation = Minimax.evaluationBoard(board)
+            if board.is_checkmate():
+                if maximizingPlayer:
+                    return float("-inf")
+                else:
+                    return float("inf")
+            elif board.is_stalemate() or board.is_insufficient_material():
+                return 0
+            return node_evaluation
+
+        possibleMoves = list(board.legal_moves)
+        random.shuffle(possibleMoves) #Shuffle the moves to randomize the order of the moves
+
+        if maximizingPlayer:
+            maxEval = float("-inf")
+            for move in possibleMoves:
+                board.push(move)
+                eval = Minimax.minimax(board, depth - 1, alpha, beta, False, 
+                                       time_before, limit_time, not color)
+                board.pop()
+                maxEval = max(maxEval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return maxEval
+        else:
+            minEval = float("inf")
+            for move in possibleMoves:
+                board.push(move)
+                eval = Minimax.minimax(board, depth - 1, alpha, beta, True,
+                                        time_before, limit_time, not color)
+                board.pop()
+                minEval = min(minEval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+            return minEval
+
 
     @staticmethod
-    def evaluationBoard(board):
+    def evaluationBoard_old(board):
         totalEvaluation = 0
         for i in range(8):
             for j in range(8):
                 s = i * 8 + j
                 totalEvaluation += Minimax.getPieceValue(str(board.piece_at(s)), i, j)
+        return totalEvaluation
+
+    @staticmethod
+    def evaluationBoard(board):
+        totalEvaluation = 0
+        for square in chess.SQUARES:
+            piece = board.piece_at(square)
+            if piece is not None:
+                piece_value = Minimax.getPieceValue(str(piece), square // 8, square % 8)
+                if piece.color == chess.WHITE:
+                    totalEvaluation += piece_value
+                else:
+                    totalEvaluation -= piece_value
         return totalEvaluation
 
     @staticmethod
@@ -170,37 +269,38 @@ class Minimax:
 
         absoluteValue = 0
 
-        if piece == 'P':
+        if piece == 'p':
+            absoluteValue = -(10 + Minimax.pawnEvalBlack[x][y])
+        elif piece == 'P':
             absoluteValue = 10 + Minimax.pawnEvalWhite[x][y]
-        elif piece == 'p':
-            absoluteValue = 10 + Minimax.pawnEvalBlack[x][y] * -1
         elif piece == 'n':
-            absoluteValue = 30 + Minimax.knightEval[x][y] * -1
+            absoluteValue = -(30 + Minimax.knightEval[x][y])
         elif piece == 'N':
             absoluteValue = 30 + Minimax.knightEval[x][y]
         elif piece == 'b':
-            absoluteValue = 30 + Minimax.bishopEvalBlack[x][y] * -1
+            absoluteValue = -(30 + Minimax.bishopEvalBlack[x][y])
         elif piece == 'B':
             absoluteValue = 30 + Minimax.bishopEvalWhite[x][y]
         elif piece == 'r':
-            absoluteValue = 50 + Minimax.rookEvalBlack[x][y] * -1
+            absoluteValue = -(50 + Minimax.rookEvalBlack[x][y])
         elif piece == 'R':
             absoluteValue = 50 + Minimax.rookEvalWhite[x][y]
         elif piece == 'q':
-            absoluteValue = 90 + Minimax.queenEval[x][y] * -1
+            absoluteValue = -(90 + Minimax.queenEval[x][y])
         elif piece == 'Q':
             absoluteValue = 90 + Minimax.queenEval[x][y]
         elif piece == 'k':
-            absoluteValue = 9000 + Minimax.kingEvalBlack[x][y] * -1
+            absoluteValue = -(9000 + Minimax.kingEvalBlack[x][y])
         elif piece == 'K':
             absoluteValue = 9000 + Minimax.kingEvalWhite[x][y]
         else:
             print(f'Unknown piece: {piece} at position [{x}], [{y}]')
+            return 0
 
         return absoluteValue
 
     @staticmethod
-    def checkmate_status(board: chess.Board, turn):
+    def checkmate_status_old(board: chess.Board, turn):
         node_evaluation = 0
         is_checkmate = board.is_checkmate()
 
@@ -214,7 +314,16 @@ class Minimax:
         return node_evaluation
 
     @staticmethod
-    def check_status(board: chess.Board, node_evaluation, turn):
+    def checkmate_status(board: chess.Board, color):
+        if board.is_checkmate():
+            if color == chess.WHITE:
+                return float("-inf")
+            else:
+                return float("inf")
+        return 0
+
+    @staticmethod
+    def check_status_old(board: chess.Board, node_evaluation, turn):
         black_evaluation = 0
         is_check = board.is_check()
 
@@ -226,6 +335,14 @@ class Minimax:
                 black_evaluation -= 10
 
         return black_evaluation
+
+    def check_status(board: chess.Board, node_evaluation, color):
+        if board.is_check():
+            if color == chess.WHITE:
+                return 10
+            else:
+                return -10
+        return 0
 
     @staticmethod
     def good_square_moves(board: chess.Board, turn):
@@ -246,7 +363,7 @@ class Minimax:
         return node_evaluation
 
     @staticmethod
-    def main(move, next_player, board: chess.Board, limit_time=3):
+    def main(move, next_player, board: chess.Board, limit_time=13): # default limit_time was 3 seconds
         if next_player == 'white':
             is_game_over = board.is_game_over()
             if is_game_over:

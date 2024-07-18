@@ -4,15 +4,16 @@ import random
 import datetime
 from minimax import Minimax
 
-class BaseAI:
+class AI_Player:
     """
     The base class for an AI player.
     
     """
 
-    def __init__(self, board):
+    def __init__(self, board, depth=None, color=None):
         self.board = board # chess.Board()
-        self.depth = None
+        self.depth = depth
+        self.color = color
         self.name = None
 
     def select_move(self):
@@ -41,7 +42,7 @@ class BaseAI:
         """
         return self.name
     
-class RandomAI(BaseAI):
+class RandomAI(AI_Player):
     """
     A class for an AI player that selects a random move.
     
@@ -50,6 +51,7 @@ class RandomAI(BaseAI):
     def __init__(self, board):
         super().__init__(board)
         self.name = "Random AI"
+        self.depth = None
         
     def select_move(self):
         """
@@ -67,16 +69,17 @@ class RandomAI(BaseAI):
             return random.choice(legal_moves)
         return None
     
-class MinimaxAI(BaseAI):
+class MinimaxAI(AI_Player):
     """
     A class for an AI player that selects a move using the minimax algorithm.
     
     """
     
-    def __init__(self, board, depth = 3): # default depth was 3
-        super().__init__(board)
+    def __init__(self, board, depth = 3, color=None, limit_time=3): # default depth was 3 and limit_time was 3
+        super().__init__(board, depth, color)
         self.name = "Minimax AI"
-        self.depth = depth
+        self.limit_time = limit_time
+        #self.depth = depth
     
     def select_move(self):
         """
@@ -89,19 +92,20 @@ class MinimaxAI(BaseAI):
         move (str): The move selected by the AI player.
         
         """
-        return Minimax.minimaxRoot(self.board, self.depth, True, datetime.datetime.now(), 3)
+        return Minimax.minimaxRoot(self.board, self.depth, True, datetime.datetime.now(), 
+                                   limit_time=self.limit_time, color=self.color)
     
-class StockfishAI(BaseAI):
+class StockfishAI(AI_Player):
     """
     A class for an AI player that selects a move using the Stockfish engine.
     The version of Stockfish used is Stockfish 24.0
     
     """
     
-    def __init__(self, board, stockfish_path, depth = 11):
-        super().__init__(board)
+    def __init__(self, board, stockfish_path, depth = 10, color=None):
+        super().__init__(board, depth)
         self.name = "Stockfish AI"
-        self.depth = depth
+        #self.depth = depth
         self.engine = chess.engine.SimpleEngine.popen_uci(stockfish_path)
         
     def select_move(self):
@@ -115,7 +119,8 @@ class StockfishAI(BaseAI):
         move (str): The move selected by the AI player.
         
         """
-        result = self.engine.play(self.board, chess.engine.Limit(time=0.5, depth=self.depth)) # default time 500 miliseconds
+        result = self.engine.play(self.board, chess.engine.Limit(depth=self.depth))
+#        result = self.engine.play(self.board, chess.engine.Limit(time=0.5, depth=self.depth)) # default time 500 miliseconds
         return result.move
     
     def close(self):
@@ -131,7 +136,7 @@ class StockfishAI(BaseAI):
         """
         self.engine.quit()
     
-class AlphaZeroAI(BaseAI):
+class AlphaZeroAI(AI_Player):
     """
     A class for an AI player that selects a move using the AlphaZero model.
     
@@ -154,7 +159,7 @@ class AlphaZeroAI(BaseAI):
         """
         raise NotImplementedError("The select_move method must be implemented by the subclass.")
     
-def get_ai_engine(name, board):
+def get_ai_engine(name, board, depth=None, color=None, limit_time=3):
     """
     Returns an AI engine based on the name provided.
     
@@ -169,9 +174,9 @@ def get_ai_engine(name, board):
     if name == "Random AI":
         return RandomAI(board)
     elif name == "Minimax AI":
-        return MinimaxAI(board)
+        return MinimaxAI(board, depth, color, limit_time)
     elif name == "Stockfish AI":
         stockfish_path = "stockfish/stockfish-windows-x86-64-avx2.exe"
-        return StockfishAI(board, stockfish_path)
+        return StockfishAI(board, stockfish_path, depth, color)
     else:
         raise ValueError("Invalid AI engine name.")

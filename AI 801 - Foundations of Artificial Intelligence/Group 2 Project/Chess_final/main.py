@@ -12,9 +12,9 @@ def main():
     None
 
     """
-
-    (white_player, black_player) = game_start_menu() # Displays a player select menue and gets user input    
-    GameModes().play_game(white_player, black_player)
+    limit_time = 1
+    (white_player, white_depth, black_player, black_depth) = game_start_menu() # Displays a player select menue and gets user input    
+    GameModes().play_game(white_player, white_depth, black_player, black_depth, limit_time)
 
 if __name__ == "__main__":
     main()

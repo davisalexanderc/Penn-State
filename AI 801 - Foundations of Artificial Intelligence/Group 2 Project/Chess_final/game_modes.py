@@ -26,8 +26,10 @@ class GameModes:
         self.gui = ChessGUI(self.board.board)
         self.white_player = None
         self.black_player = None
+        self.white_depth = None
+        self.black_depth = None
 
-    def move_ai(self, ai_name):
+    def move_ai(self, ai_name, ai_depth, color, limit_time=3):
         """
         Moves the AI player using the Stockfish engine. Eventrually, this will be replaced with the AI model.
 
@@ -38,11 +40,12 @@ class GameModes:
         None
 
         """
-        ai_engine = get_ai_engine(ai_name, self.board.board)
+        ai_engine = get_ai_engine(ai_name, self.board.board, ai_depth, color, limit_time)
         move = ai_engine.select_move()
         if move is not None:
             self.board.board.push(move)
-            print(f'AI move: {move}')
+            player_color = 'White' if self.board.board.turn == chess.WHITE else 'Black'
+            print(f'{player_color} AI player move: {move}')
 
     def get_ai_depth(self, ai_engine):
         """
@@ -56,9 +59,9 @@ class GameModes:
         
         """
 
-        return ai_engine.depth
+        return ai_engine.depth if ai_engine is not None else None
 
-    def play_game(self, white_player, black_player):
+    def play_game(self, white_player, white_depth, black_player, black_depth, limit_time=3):
         """
         Plays a game of chess based on the selected game mode.
 
@@ -73,8 +76,14 @@ class GameModes:
 
         self.white_player = white_player
         self.black_player = black_player
+        self.white_depth = white_depth
+        self.black_depth = black_depth
         board = self.board.board
         num_moves = 0
+
+        white_ai_engine = get_ai_engine(white_player, board, white_depth, chess.WHITE, limit_time) if white_player != 'human' else None
+        black_ai_engine = get_ai_engine(black_player, board, black_depth, chess.BLACK, limit_time) if black_player != 'human' else None
+
 
         print(f'white: {white_player}')
         print(f'black: {black_player}')
@@ -85,13 +94,13 @@ class GameModes:
                     while not self.gui.move_human():
                         pass
                 else:
-                    self.move_ai(self.white_player)
+                    self.move_ai(self.white_player, white_depth, chess.WHITE, limit_time)
             else:
                 if self.black_player == 'human':
                     while not self.gui.move_human():
                         pass
                 else:
-                    self.move_ai(self.black_player)
+                    self.move_ai(self.black_player, black_depth, chess.BLACK, limit_time)
 
             self.gui.update_display()
             num_moves += 1
@@ -111,11 +120,18 @@ class GameModes:
             winning_player = 'draw'
 
         # Log the game results
+        #white_depth = self.get_ai_depth(get_ai_engine(self.white_player, board)) if self.white_player != 'human' else None
+        #print(white_depth)
+        #black_depth = self.get_ai_depth(get_ai_engine(self.black_player, board)) if self.black_player != 'human' else None
+        #print(black_depth)
+
         log_game_results('game_results.csv', 
             self.white_player, 
             self.black_player, 
-            white_depth = self.get_ai_depth(get_ai_engine(self.white_player, board)) if self.white_player != 'human' else None, 
-            black_depth = self.get_ai_depth(get_ai_engine(self.black_player, board)) if self.black_player != 'human' else None, 
+            white_depth=self.get_ai_depth(white_ai_engine),  # Code changed here
+            black_depth=self.get_ai_depth(black_ai_engine),  # Code changed here
+            #white_depth = self.get_ai_depth(get_ai_engine(self.white_player, board)) if self.white_player != 'human' else None, 
+            #black_depth = self.get_ai_depth(get_ai_engine(self.black_player, board)) if self.black_player != 'human' else None, 
             num_moves = num_moves, 
             winning_player = winning_player
         )
@@ -140,5 +156,5 @@ class GameModes:
         self.gui.selected_piece = None
         self.gui.selected_pos = None
         self.gui.possible_moves = []
-        self.play_game(self.white_player, self.black_player)
+        self.play_game(self.white_player, self.white_depth, self.black_player, self.black_depth)
         
