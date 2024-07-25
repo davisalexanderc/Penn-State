@@ -118,7 +118,8 @@ def game_start_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                return ("None", None, "None", None)
+                pygame.quit()
+                exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 if button1_location.collidepoint(mouse_pos):
@@ -181,7 +182,8 @@ def select_ai_menu(player_color):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                return ("None")
+                pygame.quit()
+                exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 if button1_location.collidepoint(mouse_pos):
@@ -201,8 +203,15 @@ def select_ai_menu(player_color):
 
 def select_depth_menu(player_color, ai_engine):
     """
-    
+    Generates the AI depth selection menu.
 
+    Parameters:
+    - player_color (str): The color of the player ('white' or 'black').
+    - ai_engine (str): The AI engine name.
+
+    Returns:
+    int: The selected depth for the AI engine.
+    
     """
     running = True
     clock = pygame.time.Clock()
@@ -233,7 +242,8 @@ def select_depth_menu(player_color, ai_engine):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                return None
+                pygame.quit()
+                exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 for i, button in enumerate(buttons):
@@ -244,6 +254,55 @@ def select_depth_menu(player_color, ai_engine):
         pygame.display.flip()  # Update the display
         clock.tick(15) # set frame rate to 15 fps
     pygame.quit()
+
+def play_again_menu():
+    """
+    Generates the play again menu.
+
+    Parameters:
+    None
+
+    Returns:
+    bool: True if the user wants to play again, False otherwise
+    
+    """
+
+    running = True
+    clock = pygame.time.Clock()
+    play_again_screen = pygame.display.set_mode((START_SCREEN_WIDTH, START_SCREEN_HEIGHT), pygame.DOUBLEBUF)
+    pygame.display.set_caption('Game Over!')
+
+    while running:
+
+        play_again_screen.fill(WHITE)
+
+        # Define button locations
+        button_width, button_height = 300, 50
+        button1_location = pygame.Rect(100, 150, button_width, button_height)
+        button2_location = pygame.Rect(100, 300, button_width, button_height)
+
+        # Draw buttons
+        draw_text("Do you want to play again?", start_font, BLACK, play_again_screen, START_SCREEN_WIDTH // 2, 50)
+        draw_button(play_again_screen, "Yes", button1_location)
+        draw_button(play_again_screen, "No", button2_location)
+
+        # Check for button press
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                if button1_location.collidepoint(mouse_pos):
+                    return True
+                elif button2_location.collidepoint(mouse_pos):
+                    return False
+        
+        pygame.display.flip()  # Update the display
+        clock.tick(15) # set frame rate to 30 fps
+    #pygame.quit()
+
 
 # Define Functions for Loading and Drawing Piece Images
 
@@ -293,6 +352,14 @@ class ChessGUI:
         self.selected_pos = None
         self.possible_moves = []
         self.status_message = ""
+        self.play_again = False
+        self.quit_game = False        
+        print(f"Initialized ChessGUI with width: {self.width}, height: {self.height}")
+
+    def reset(self, board):
+        self.__init__(board)
+        self.update_display()
+        print(f"Reset ChessGUI with width: {self.width}, height: {self.height}")
 
     def draw_board(self):
         """
@@ -320,7 +387,63 @@ class ChessGUI:
                     self.screen.blit(piece_image, (col * SQUARE_SIZE + self.boarder, row * SQUARE_SIZE + self.boarder))
         
         if self.status_message:
-            draw_text(self.status_message, start_font, RED, self.screen, self.width // 2, self.height - 50)
+            draw_text(self.status_message, start_font, RED, self.screen, self.width // 2, 875)
+
+    def draw_end_game_buttons(self):
+        """
+        Draws the end game buttons.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        
+        """
+
+        # Define button locations
+        button_width, button_height = 150, 50
+        replay_button_location = pygame.Rect(200, 900, button_width, button_height)
+        quit_button_location = pygame.Rect(500, 900, button_width, button_height)
+
+        # Draw buttons
+        draw_button(self.screen, "Play Again", replay_button_location)
+        draw_button(self.screen, "Quit", quit_button_location)
+        pygame.display.flip()
+
+        quit_game = True
+        while quit_game:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit_game = True
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    if replay_button_location.collidepoint(mouse_pos):
+                        self.play_again = True
+                        quit_game = False
+                        self.clear_status_message()
+                    elif quit_button_location.collidepoint(mouse_pos):
+                        self.quit_game = True
+                        pygame.quit()
+                        exit()
+
+    def clear_status_message(self):
+        """
+        Clears the status message.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        
+        """
+
+        self.status_message = ""
+        pygame.draw.rect(self.screen, BLACK, (25, 850, 975, 850))
+        self.update_display()
 
     def update_display(self):
         """
@@ -337,8 +460,6 @@ class ChessGUI:
         self.draw_board()
         pygame.display.flip()
         self.clock.tick(30)
-
-    #def handel_human_move(self):
 
     def handel_click(self, pos):
         """
@@ -366,6 +487,7 @@ class ChessGUI:
                     chess.square_rank(move.to_square) in (0, 7)):
                         promotion_piece = self.get_pawn_promotion()
                         move = chess.Move(move.from_square, move.to_square, promotion = promotion_piece)
+                        self.clear_status_message()
                         
                 self.board.push(move)
                 (white_score, black_score, self.status_message) = self.chessboard.get_game_results()
@@ -412,14 +534,30 @@ class ChessGUI:
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    pygame.quit()
+                    exit()  # Ensure the entire program exits
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.handel_click(pos):
                         return True
-                    
             self.update_display()
         return False
+
+    def get_clicked_square(self, pos):
+        """
+        Gets the clicked square.
+
+        Parameters:
+        - pos (tuple): The position of the click.
+
+        Returns:
+        int: The clicked square.
+        
+        """
+
+        col = (pos[0] - self.boarder) // SQUARE_SIZE
+        row = 7 - (pos[1] - self.boarder) // SQUARE_SIZE
+        return chess.square(col, row)
 
     def main_loop(self):
         running = True
@@ -477,3 +615,22 @@ class ChessGUI:
             pygame.display.flip()
             self.clock.tick(15)
         pygame.quit()
+
+    def reset(self, board):
+        """
+        Resets the game.
+
+        Parameters:
+        - board (chess.Board): The chess board object.
+
+        Returns:
+        None
+        
+        """
+
+        self.board = board
+        self.selected_piece = None
+        self.selected_pos = None
+        self.possible_moves = []
+        self.status_message = ""
+        self.update_display()

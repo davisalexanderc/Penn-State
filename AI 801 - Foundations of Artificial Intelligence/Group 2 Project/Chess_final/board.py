@@ -1,10 +1,13 @@
+# board.py
+# Description: This file contains the ChessBoard class which is used to manage the chess board and game state.
+#
+
 import chess
 import chess.engine
 
 class ChessBoard:
     def __init__(self):
         self.board = chess.Board()
-        #self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
 
     def reset_board(self):
         self.board.reset()
@@ -25,9 +28,6 @@ class ChessBoard:
         """
         Get the game results for the end of the game. Prints the result to the console, then 
         returns the scores for white and black players (0 for loss, 0.5 for draw, 1 for win).
-
-        Parameters:
-        None
 
         Returns:
         tuple: A tuple containing the scores for white and black players (0 for loss, 0.5 for draw, 1 for win) and a message string.

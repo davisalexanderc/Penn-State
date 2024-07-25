@@ -1,7 +1,12 @@
+# AI_player.py
+# Description: This file contains the AI_Player class which is used to create AI players for the game.
+#
+
 import chess
 import chess.engine
 import random
 import datetime
+import time
 from minimax import Minimax
 
 class AI_Player:
@@ -20,9 +25,6 @@ class AI_Player:
         """
         Selects a move for the AI player.
         
-        Parameters:
-        None
-        
         Returns:
         move (str): The move selected by the AI player.
         
@@ -32,9 +34,6 @@ class AI_Player:
     def get_name(self):
         """
         Returns the name of the AI player.
-        
-        Parameters:
-        None
         
         Returns:
         name (str): The name of the AI player.
@@ -57,9 +56,6 @@ class RandomAI(AI_Player):
         """
         Selects a random move for the AI player.
         
-        Parameters:
-        None
-        
         Returns:
         move (str): The move selected by the AI player.
         
@@ -75,18 +71,15 @@ class MinimaxAI(AI_Player):
     
     """
     
-    def __init__(self, board, depth = 3, color=None, limit_time=3): # default depth was 3 and limit_time was 3
+    def __init__(self, board, depth = 3, color=None, limit_time=30): # default depth was 3 and limit_time was 3
         super().__init__(board, depth, color)
         self.name = "Minimax AI"
         self.limit_time = limit_time
-        #self.depth = depth
+        self.depth = depth
     
     def select_move(self):
         """
         Selects a move for the AI player using the minimax algorithm.
-        
-        Parameters:
-        None
         
         Returns:
         move (str): The move selected by the AI player.
@@ -105,15 +98,22 @@ class StockfishAI(AI_Player):
     def __init__(self, board, stockfish_path, depth = 10, color=None):
         super().__init__(board, depth)
         self.name = "Stockfish AI"
-        #self.depth = depth
-        self.engine = chess.engine.SimpleEngine.popen_uci(stockfish_path)
-        
+        self.depth = depth
+        retries = 5  # Number of retries
+        while retries > 0:
+            try:
+                self.engine = chess.engine.SimpleEngine.popen_uci(stockfish_path)
+                break
+            except Exception as e:
+                print(f"Failed to initialize Stockfish engine: {e}. Retrying...")
+                retries -= 1
+                time.sleep(1)  # Wait for 1 second before retrying
+        if retries == 0:
+            raise RuntimeError("Failed to initialize Stockfish engine after multiple attempts.")
+
     def select_move(self):
         """
         Selects a move for the AI player using the Stockfish engine.
-        
-        Parameters:
-        None
         
         Returns:
         move (str): The move selected by the AI player.
@@ -126,12 +126,6 @@ class StockfishAI(AI_Player):
     def close(self):
         """
         Closes the Stockfish engine.
-        
-        Parameters:
-        None
-        
-        Returns:
-        None
         
         """
         self.engine.quit()
@@ -149,17 +143,14 @@ class AlphaZeroAI(AI_Player):
     def select_move(self):
         """
         Selects a move for the AI player using the AlphaZero model.
-        
-        Parameters:
-        None
-        
+
         Returns:
         move (str): The move selected by the AI player.
         
         """
         raise NotImplementedError("The select_move method must be implemented by the subclass.")
     
-def get_ai_engine(name, board, depth=None, color=None, limit_time=3):
+def get_ai_engine(name, board, depth=None, color=None, limit_time=60):
     """
     Returns an AI engine based on the name provided.
     
