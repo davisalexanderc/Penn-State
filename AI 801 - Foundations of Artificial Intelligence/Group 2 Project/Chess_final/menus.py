@@ -145,7 +145,7 @@ def select_ai_menu(player_color):
         draw_text("Welcome to Chess!", start_font, constants.BLACK, ai_screen, constants.START_SCREEN_WIDTH // 2, 50)
         draw_button(ai_screen, "Random Engine", button1_location)
         draw_button(ai_screen, "Minimax Engine", button2_location)
-        draw_button(ai_screen, "AlphaZero Engine", button3_location)
+        draw_button(ai_screen, "MCTS Engine", button3_location)
         draw_button(ai_screen, "Stockfish Engine", button4_location)
 
         # Check for button press
@@ -162,7 +162,8 @@ def select_ai_menu(player_color):
                     depth = select_depth_menu(player_color, "Minimax AI")
                     return f"{player_color}_ai", "Minimax AI", depth
                 elif button3_location.collidepoint(mouse_pos):
-                    return f"{player_color}_ai", "AlphaZero AI", None
+                    depth = 500  # Default depth for MCTS
+                    return f"{player_color}_ai", "MCTS AI", depth
                 elif button4_location.collidepoint(mouse_pos):
                     depth = select_depth_menu(player_color, "Stockfish AI")
                     return f"{player_color}_ai", "Stockfish AI", depth

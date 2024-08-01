@@ -8,6 +8,8 @@ import random
 import datetime
 import time
 from minimax import Minimax
+from mcts_ai import MCTS
+from chess_env import ChessEnv
 
 class AI_Player:
     """
@@ -87,7 +89,32 @@ class MinimaxAI(AI_Player):
         """
         return Minimax.minimaxRoot(self.board, self.depth, True, datetime.datetime.now(), 
                                    limit_time=self.limit_time, color=self.color)
+
+class MCTSAI(AI_Player):
+    """
+    A class for an AI player that selects a move using the Monte Carlo Tree Search model.
     
+    """
+    
+    def __init__(self, board, depth=1000, color=None, limit_time=60, C=1.4): # depth is the number of searches
+        super().__init__(board, depth, color)
+        self.name = "MCTS AI"
+        self.depth = depth
+        self.limit_time = limit_time
+        self.C = C
+
+        
+    def select_move(self):
+        """
+        Selects a move for the AI player using the MCTS model.
+
+        Returns:
+        move (str): The move selected by the AI player.
+        
+        """
+        mcts = MCTS(self.board, num_searches=self.depth, C=self.C)
+        return mcts.search()
+
 class StockfishAI(AI_Player):
     """
     A class for an AI player that selects a move using the Stockfish engine.
@@ -130,33 +157,17 @@ class StockfishAI(AI_Player):
         """
         self.engine.quit()
     
-class AlphaZeroAI(AI_Player):
-    """
-    A class for an AI player that selects a move using the AlphaZero model.
-    
-    """
-    
-    def __init__(self, board):
-        super().__init__(board)
-        self.name = "AlphaZero AI"
-        
-    def select_move(self):
-        """
-        Selects a move for the AI player using the AlphaZero model.
-
-        Returns:
-        move (str): The move selected by the AI player.
-        
-        """
-        raise NotImplementedError("The select_move method must be implemented by the subclass.")
-    
-def get_ai_engine(name, board, depth=None, color=None, limit_time=60):
+def get_ai_engine(name, board, depth=None, color=None, limit_time=60, C=1.4):
     """
     Returns an AI engine based on the name provided.
     
     Parameters:
     name (str): The name of the AI engine.
     board (chess.Board): The chess board.
+    depth (int): The depth of the AI engine, or the number of searches for the MCTS AI engine.
+    color (chess.Color): The color of the AI engine.
+    limit_time (int): The time limit for the AI engine.
+    C (float): The exploration parameter for the MCTS AI engine
     
     Returns:
     ai_engine (BaseAI): An instance of the AI engine.
@@ -166,6 +177,9 @@ def get_ai_engine(name, board, depth=None, color=None, limit_time=60):
         return RandomAI(board)
     elif name == "Minimax AI":
         return MinimaxAI(board, depth, color, limit_time)
+    elif name == "MCTS AI":
+        limit_time = 15
+        return MCTSAI(board, depth, color, limit_time)
     elif name == "Stockfish AI":
         stockfish_path = "stockfish/stockfish-windows-x86-64-avx2.exe"
         return StockfishAI(board, stockfish_path, depth, color)
