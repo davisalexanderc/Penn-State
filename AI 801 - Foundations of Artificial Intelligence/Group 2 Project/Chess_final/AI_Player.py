@@ -178,7 +178,6 @@ def get_ai_engine(name, board, depth=None, color=None, limit_time=60, C=1.4):
     elif name == "Minimax AI":
         return MinimaxAI(board, depth, color, limit_time)
     elif name == "MCTS AI":
-        limit_time = 15
         return MCTSAI(board, depth, color, limit_time)
     elif name == "Stockfish AI":
         stockfish_path = "stockfish/stockfish-windows-x86-64-avx2.exe"

@@ -104,6 +104,8 @@ class ChessGUI:
                     self.screen.blit(piece_image, (col * constants.SQUARE_SIZE + self.boarder, 
                                                    row * constants.SQUARE_SIZE + self.boarder))
         
+        self.highlight_moves() ############# New line added to highlight possible moves
+
         if self.status_message:
             draw_text(self.status_message, start_font, constants.RED, self.screen, self.width // 2, 875)
 
@@ -207,14 +209,36 @@ class ChessGUI:
                 if piece.color == self.board.turn:
                     self.selected_piece = piece
                     self.selected_pos = square
-                    self.possible_moves = list(self.board.legal_moves)
-                    self.possible_moves = [move.to_square for move in self.possible_moves if move.from_square == self.selected_pos]
+                    ####self.possible_moves = list(self.board.legal_moves)
+                    self.possible_moves = [move.to_square for move in list(self.board.legal_moves) if move.from_square == self.selected_pos]
                 else:
                     self.selected_piece = None
                     self.selected_pos = None
                     self.possible_moves = []
         return False
     
+    def highlight_moves(self):
+        """
+        Highlights the possible moves for the selected piece.
+
+        """
+
+        if self.selected_piece:
+            highlight_surface = pygame.Surface((constants.SQUARE_SIZE, constants.SQUARE_SIZE))
+            highlight_surface.set_alpha(100)
+            highlight_surface.fill(constants.TRANSPARENT_GREEN)
+
+            for move in self.possible_moves:
+                col = chess.square_file(move) 
+                row = 7 - chess.square_rank(move)
+                self.screen.blit(highlight_surface, (col * constants.SQUARE_SIZE + self.boarder, 
+                                                     row * constants.SQUARE_SIZE + self.boarder))
+
+#                pygame.draw.rect(self.screen, constants.TRANSPARENT_GREEN, 
+#                                (col * constants.SQUARE_SIZE + self.boarder, 
+#                                row * constants.SQUARE_SIZE + self.boarder, 
+#                                constants.SQUARE_SIZE, constants.SQUARE_SIZE))#####, 5)
+
     def move_human(self):
         """
         Moves the human player.
