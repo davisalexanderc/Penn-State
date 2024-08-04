@@ -162,7 +162,7 @@ def select_ai_menu(player_color):
                     depth = select_depth_menu(player_color, "Minimax AI")
                     return f"{player_color}_ai", "Minimax AI", depth
                 elif button3_location.collidepoint(mouse_pos):
-                    depth = 500  # Default depth for MCTS
+                    depth = select_MCTS_search_menu(player_color, "MCTS AI")
                     return f"{player_color}_ai", "MCTS AI", depth
                 elif button4_location.collidepoint(mouse_pos):
                     depth = select_depth_menu(player_color, "Stockfish AI")
@@ -221,6 +221,60 @@ def select_depth_menu(player_color, ai_engine):
                     if button.collidepoint(mouse_pos):
                         print(f"Depth selected: {i + 1}")
                         return i + 1
+                    
+        pygame.display.flip()  # Update the display
+        clock.tick(constants.FRAME_RATE)
+    pygame.quit()
+
+def select_MCTS_search_menu(player_color, ai_engine):
+    """
+    Generates the AI depth selection menu.
+
+    Parameters:
+    - player_color (str): The color of the player ('white' or 'black').
+    - ai_engine (str): The AI engine name.
+
+    Returns:
+    int: The selected depth for the AI engine.
+    
+    """
+    running = True
+    clock = pygame.time.Clock()
+    ai_depth_screen = pygame.display.set_mode((constants.START_SCREEN_WIDTH, constants.START_SCREEN_HEIGHT), pygame.DOUBLEBUF)
+    pygame.display.set_caption(f"Select Depth for {player_color}'s {ai_engine} AI Engine")
+
+    while running:
+
+        ai_depth_screen.fill(constants.WHITE)
+
+        # Define button locations
+        button_width, button_height = 75, 50
+        button_gap = 10
+        buttons = []
+
+        for i in range(20):
+            x = 50 + (i % 5) * (button_width + button_gap)
+            y = 100 + (i // 5) * (button_height + button_gap)
+            buttons.append(pygame.Rect(x, y, button_width, button_height))
+
+        # Draw buttons
+        draw_text("Welcome to Chess!", start_font, constants.BLACK, ai_depth_screen, constants.START_SCREEN_WIDTH // 2, 50)
+
+        for i, button in enumerate(buttons):
+            draw_button(ai_depth_screen, str((i + 1) * 100), button, start_font)
+
+        # Check for button press
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                for i, button in enumerate(buttons):
+                    if button.collidepoint(mouse_pos):
+                        print(f"Depth selected: {(i + 1)*100}")
+                        return (i + 1)*100
                     
         pygame.display.flip()  # Update the display
         clock.tick(constants.FRAME_RATE)

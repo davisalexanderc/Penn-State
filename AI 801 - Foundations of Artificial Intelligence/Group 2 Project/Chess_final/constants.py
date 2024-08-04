@@ -23,7 +23,7 @@ WHITE = (255, 255, 255)
 TAN = (210, 180, 140) # For the boarder color
 DARKGRAY = (100, 100, 100)
 RED = (255, 0, 0)
-TRANSPARENT_GREEN = (0, 255, 0, 100)
+TRANSPARENT_GREEN = (0, 255, 0, 100) # Transparent green for highlighting squares
 
 # Define fonts
 START_FONT_SIZE = 36

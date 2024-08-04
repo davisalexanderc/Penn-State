@@ -78,8 +78,6 @@ def draw_button(screen, text, location, font = start_font, button_color = DARKGR
     text_rect = text_surface.get_rect(center = button.center)
     screen.blit(text_surface, text_rect)
 
-# Define Game Start Menu Function
-
 def game_start_menu():
     """
     Generates the game start menu.
@@ -214,6 +212,7 @@ def select_depth_menu(player_color, ai_engine):
     int: The selected depth for the AI engine.
     
     """
+    
     running = True
     clock = pygame.time.Clock()
     ai_depth_screen = pygame.display.set_mode((START_SCREEN_WIDTH, START_SCREEN_HEIGHT), pygame.DOUBLEBUF)
