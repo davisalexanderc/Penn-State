@@ -1,6 +1,5 @@
 # menus.py
 # Description: This file contains the GUI for the menu screen.
-#
 
 import pygame
 import constants

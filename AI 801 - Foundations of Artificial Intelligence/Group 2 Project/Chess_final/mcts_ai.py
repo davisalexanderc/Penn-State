@@ -20,9 +20,18 @@ class Node:
         self.value_sum = 0
         
     def is_fully_expanded(self):
+        """
+        Check if the node is fully expanded.
+        
+        """
         return len(self.expandable_moves) == 0 and len(self.children) > 0
     
     def select(self):
+        """
+        Select the best child node based on the UCB1 formula.
+        
+        """
+
         best_child = None
         best_ucb = -np.inf
         
@@ -35,10 +44,18 @@ class Node:
         return best_child
     
     def get_ucb(self, child):
+        """
+        Get the UCB1 value for a child node.
+        
+        """
         q_value = (child.value_sum / child.visit_count)
         return q_value + self.C * math.sqrt(math.log(self.visit_count) / child.visit_count)
     
     def expand(self):
+        """
+        Expand the node by adding a child node.
+        
+        """
         action = random.choice(self.expandable_moves)
         self.expandable_moves.remove(action)
         
@@ -50,6 +67,10 @@ class Node:
         return child
     
     def simulate(self):
+        """
+        Simulate a game from the current node.
+        
+        """
         value, is_terminal = ChessEnv().get_value_and_terminated(self.board, self.action_taken)
         
         if is_terminal:
@@ -69,6 +90,13 @@ class Node:
             rollout_player = ChessEnv().get_opponent(rollout_player)
             
     def backpropagate(self, value):
+        """
+        Backpropagate the value of a simulation.
+        
+        args:
+        value (float): The value of the simulation.
+
+        """
         self.value_sum += value
         self.visit_count += 1
         
@@ -78,12 +106,20 @@ class Node:
             
 
 class MCTS:
+    """
+    A class for the Monte Carlo Tree Search model.
+    
+    """
     def __init__(self, board, num_searches=1000, C=1.4):
         self.board = board
         self.num_searches = num_searches
         self.C = C
         
     def search(self):
+        """
+        Perform the MCTS search.
+        
+        """
         # define root
         root = Node(self.board, self.num_searches, self.C)
         

@@ -1,3 +1,6 @@
+# File: ChessEnv
+# Description: A class for an that helps set the initial parameters for MCST AI player.
+
 import chess
 import numpy as np
 
